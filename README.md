@@ -1,1 +1,1 @@
-# ClinicRegistration
+# Clinic Registration with PostgreSQL
