@@ -18,7 +18,7 @@ if(isset($_POST["regis"])){
 
     $select = "SELECT * FROM credentials WHERE email = '$email' ";
     
-    $result = mysqli_query($conn, $select);
+    $result = pg_query($conn, $select);
 
     if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
         $error = "Email tidak valid";
@@ -28,7 +28,7 @@ if(isset($_POST["regis"])){
         || empty(trim($_POST["nik"])) || empty(trim($_POST["dept"]))){
         $error = "Semua data harus diisi";
     }else{
-        if(mysqli_num_rows($result) > 0){
+        if(pg_num_rows($result) > 0){
             $error = "Email sudah terdaftar";
         }else{
             $sql = "INSERT INTO credentials (email, passwd, nama, lahir, perusahaan, nik, dept) 
@@ -36,16 +36,16 @@ if(isset($_POST["regis"])){
 
             // $sql2 = "INSERT INTO `daftar` (`email`) VALUES ('$email)";
 
-            if(mysqli_query($conn, $sql) == true){
+            if(pg_query($conn, $sql) == true){
                 $_SESSION['email'] = $email;
                 $_SESSION['passwd'] = $passwd;
                 header('location:daftar.php');
             }else{
-                $error = "Error: " . mysqli_connect_error();
+                $error = "Error: " . pg_last_error();
             }
         }
     }
-    mysqli_close($conn);
+    pg_close($conn);
 }
 ?>
 <!DOCTYPE html>

@@ -1,31 +1,48 @@
 <?php
 session_start();
+$error = "";
+$sukses = "";
+require_once('include/dbh.inc.php');
 if(!isset($_GET['id'])){
-    die('ID does not eexist');
+    die("Data tidak dapat ditemukan");
 }
 // kalo access user bukan admin atau dokter, redirect ke page daftar
-if($_SESSION['access'] != "admin" && $_SESSION['access'] != "dokter"){
+if($_SESSION['access'] != "admin" && $_SESSION['access'] != "doctor"){
     header('location: daftar.php');
+}elseif($_SESSION['access'] == "doctor"){
+    header('location: history_dokter.php');
 }
 
-require_once('include/dbh.inc.php');
 
 $id = $_GET['id'];
 // select semua data dari table credentials dimana value row id == id
 $select = "SELECT * FROM credentials WHERE id = '$id' ";
-$result = mysqli_query($conn, $select);
+$result = pg_query($conn, $select);
 // kalo jumlah row lbh kecil dr 1, id tidak di database
-if(mysqli_num_rows($result) < 1){
-    die('ID is not in database');
+if(pg_num_rows($result) < 1){
+    $error = "Data tidak ditemukan di dalam database";
 }
 // fetch data
-$data = mysqli_fetch_assoc($result);
-?>
-<?php
-require_once 'include/dbh.inc.php';
+$data = pg_fetch_assoc($result);
 
-$error = "";
-$sukses = "";
+$perusahaan = "";
+$nama = "";
+$dept = "";
+$diagnosa = "";
+$obat = "";
+$tindak = "";
+$keterangan = "";
+$keluhan = "";
+
+$perusahaan = is_bool($data['perusahaan']) == 1 ? "" : $data['perusahaan'];
+$nama = is_bool($data['nama']) == 1 ? "" : $data['nama'];
+$dept = is_bool($data['dept']) == 1 ? "" : $data['dept'];
+$diagnosa = is_bool($data['diagnosa']) == 1 ? "" : $data['diagnosa'];
+$obat = is_bool($data['obat']) == 1 ? "" : $data['obat'];
+$tindak = is_bool($data['tindak']) == 1 ? "" : $data['tindak'];
+$keterangan = is_bool($data['keterangan']) == 1 ? "" : $data['keterangan'];
+$keluhan = is_bool($data['keluhan']) == 1 ? "" : $data['keluhan'];
+
 // kalo id ada dan edit button di klik
 if(isset($_GET['id']) && isset($_POST['edit'])){
     $id = $_GET['id'];
@@ -50,11 +67,11 @@ if(isset($_GET['id']) && isset($_POST['edit'])){
                 dept = '$dept'
                 WHERE id = '$id' ";
     // execute query, kalo true display sukses message
-    if(mysqli_query($conn, $updateCred) == true){
+    if(pg_query($conn, $updateCred) == true){
         $sukses = "Data pasien berhasil di update";
     }else{
         // kalo gagal display error message
-        $error = "Data paseien gagal di update. Error: " . mysqli_connect_error();
+        $error = "Data paseien gagal di update. Error: " . pg_last_error($conn);
     }
 }
 ?>

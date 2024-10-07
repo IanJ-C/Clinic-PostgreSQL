@@ -57,17 +57,17 @@ else{
 }
 // select semua data dari table credentials dimana value row email == currentUser
 $checkData = "SELECT * FROM credentials WHERE email = '".$currentUser."' ";
-$result = mysqli_query($conn, $checkData);
-$getData = mysqli_fetch_assoc($result);
+$result = pg_query($conn, $checkData);
+$getData = pg_fetch_assoc($result);
 
 // select semua data dr table daftar dimana value row berobat == current date (memastikan data yg ditampilkan sesuai hari)
 $selectHari = "SELECT * FROM daftar WHERE berobat = (CURRENT_DATE) ";
-$queryHari = mysqli_query($conn, $selectHari);
+$queryHari = pg_query($conn, $selectHari);
 // get jumlah row dan + 1 sebagai no antrian
-$rowCount = mysqli_num_rows($queryHari);
+$rowCount = pg_num_rows($queryHari);
 $antrian = $rowCount + 1;
 // fetch data sesuai queryHari, store ke array waktuRow buat cek waktu
-while($cekWaktu = mysqli_fetch_assoc($queryHari)){
+while($cekWaktu = pg_fetch_assoc($queryHari)){
     $waktuRow[] = $cekWaktu['waktu'];
 }
 // kalo daftar di klik, store value waktu & keluhan ke local variable
@@ -96,11 +96,11 @@ if(isset($_POST["daftar"])){
                 ('".$getData['email']."', '".$timeSelect."','".$getData['nama']."','".$getData['lahir']."',
                 '".$getData['perusahaan']."','".$getData['nik']."','".$getData['dept']."','".$keluhan."') ";
         // execute query, kalo true display success message
-        if(mysqli_query($conn, $insert) == true){
+        if(pg_query($conn, $insert) == true){
             $sukses = "Registration Successful";
         }else{
             // kalo gagal display error
-            $error = "Error: " . mysqli_connect_error();
+            $error = "Error: " . pg_last_error($conn);
         }
     }
 }
@@ -222,13 +222,13 @@ if(isset($_POST["daftar"])){
                                     <?php
                                     $rowCheck = array();
                                     $timeQuery = "SELECT * FROM list_waktu";
-                                    $timeResult = mysqli_query($conn,$timeQuery);
+                                    $timeResult = pg_query($conn,$timeQuery);
                                     $waktuQuery = "SELECT * FROM daftar WHERE berobat = (CURRENT_DATE) ";
-                                    $waktuResult = mysqli_query($conn, $waktuQuery);
-                                    while($rowResult = mysqli_fetch_assoc($waktuResult)){
+                                    $waktuResult = pg_query($conn, $waktuQuery);
+                                    while($rowResult = pg_fetch_assoc($waktuResult)){
                                         $rowCheck[] = $rowResult['waktu'];
                                     }
-                                    while($row = mysqli_fetch_assoc($timeResult)){
+                                    while($row = pg_fetch_assoc($timeResult)){
                                     ?>
                                         <option value="<?php echo $row['jam'] ?>"
                                         <?php

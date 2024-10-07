@@ -17,4 +17,4 @@ if($currentUser == "" || $currentPass == ""){
 }
 
 $query = "SELECT * FROM daftar WHERE email = '".$currentUser."' ";
-$result = mysqli_query($conn,$query);
+$result = pg_query($conn,$query);

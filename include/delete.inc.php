@@ -6,7 +6,7 @@ require_once 'dbh.inc.php';
 if(isset($_GET['id'])){
     $id = $_GET['id'];
     $sql = "DELETE FROM daftar WHERE id = '$id' ";
-    $query = mysqli_query($conn,$sql);
+    $query = pg_query($conn,$sql);
 
     if($query == true){
         $_SESSION["sukses"] = "Data pasien berhasil di delete";

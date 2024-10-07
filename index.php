@@ -20,13 +20,13 @@ if(isset($_POST['login'])){
     //select semua data dari table 'credentials' dimana email & password di database == email & password local
     $select = "SELECT * FROM credentials WHERE email = '$email' AND passwd = '$passwd' ";
     //execute query select
-    $result = mysqli_query($conn, $select); 
+    $result = pg_query($conn, $select); 
     //fetch array dari hasil query buat ambil access
-    $row = mysqli_fetch_assoc($result); 
-    @$_SESSION['access'] = $row['access']; //store value access dari database ke session variable
+    $row = pg_fetch_assoc($result); 
+    $_SESSION['access'] = $row['access']; //store value access dari database ke session variable
 
     //cek jumlah row, lebih dari 0 atau ga (cek apakah data ada di database)
-    if(mysqli_num_rows($result) > 0){
+    if(pg_num_rows($result) > 0){
         $_SESSION['email'] = $email;
         $_SESSION['passwd'] = $passwd;
         //kalo access == admin, redirect ke page history admin
@@ -41,7 +41,7 @@ if(isset($_POST['login'])){
     }elseif($row['email'] != $email && $row['passwd'] != $passwd){
         $error = "Error: Username atau Password Salah";
     }
-    mysqli_close($conn);
+    pg_close($conn);
 }
 ?>
 

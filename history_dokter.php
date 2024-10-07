@@ -36,7 +36,7 @@ elseif(isset($_POST['clear'])){
     $query = "SELECT * FROM daftar";
 }
 // execute query
-$result = mysqli_query($conn, $query);
+$result = pg_query($conn, $query);
 ?>
 
 <!DOCTYPE html>
@@ -185,7 +185,7 @@ $result = mysqli_query($conn, $query);
                     <!-- display semua data -->
                     <?php
                     $antrian = 1;
-                    while($row = mysqli_fetch_assoc($result)){
+                    while($row = pg_fetch_assoc($result)){
                         $waktu = date_create($row['waktu']);
                         $lahir = date_create($row['lahir']);
                         $berobat = date_create($row['berobat']);

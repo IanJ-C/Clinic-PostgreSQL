@@ -32,7 +32,7 @@ else{
     $_SESSION['filter'] = $query;
 }
 
-$result = mysqli_query($conn, $_SESSION['filter']);
+$result = pg_query($conn, $_SESSION['filter']);
 ?>
 
 <!DOCTYPE html>
@@ -160,7 +160,7 @@ $result = mysqli_query($conn, $_SESSION['filter']);
                     <!-- display semua data credentials -->
                     <?php
                     $antrian = 1;
-                    while($row = mysqli_fetch_assoc($result)){
+                    while($row = pg_fetch_assoc($result)){
                     ?>
                         <td class="text-center fs-md fs-sm"><?php echo $antrian++; ?></td>
                         <td class="text-center fs-md fs-sm"><?php echo $row['email']; ?></td>

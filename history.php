@@ -47,7 +47,7 @@ elseif(isset($_POST['clear'])){
     $_SESSION['filter'] = $query;
 }
 // execute query
-$result = mysqli_query($conn, $_SESSION['filter']);
+$result = pg_query($conn, $_SESSION['filter']);
 ?>
 
 <!DOCTYPE html>
@@ -205,7 +205,7 @@ $result = mysqli_query($conn, $_SESSION['filter']);
                     <!-- display semua data -->
                     <?php
                     $antrian = 1;
-                    while($row = mysqli_fetch_assoc($result)){
+                    while($row = pg_fetch_assoc($result)){
                         $waktu = date_create($row['waktu']);
                         $lahir = date_create($row['lahir']);
                         $berobat = date_create($row['berobat']);

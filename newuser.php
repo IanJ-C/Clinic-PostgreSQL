@@ -20,26 +20,26 @@ if(isset($_POST["regis"])){
     $access = $_POST["access"];
     // select semua data dari table credentials dimana value row email == email & execute query
     $select = "SELECT * FROM credentials WHERE email = '$email' ";
-    $result = mysqli_query($conn, $select);
+    $result = pg_query($conn, $select);
     // cek kalo email tidak valid, display error message
     if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
         $error = "Email tidak valid";
     }else{
         // kalo jumlah row lbh dr 0, email sudah terdaftar
-        if(mysqli_num_rows($result) > 0){
+        if(pg_num_rows($result) > 0){
             $error = "User sudah terdaftar";
         }else{
             // sql statement buat insert ke table credentials
             $sql = "INSERT INTO credentials (email, passwd, access) VALUES ('$email','$passwd','$access')";
             // execute query, kalo berhasil display sukses message
-            if(mysqli_query($conn, $sql) == true){
+            if(pg_query($conn, $sql) == true){
                 $sukses = "User baru berhasil didaftarkan";
             }else{
-                $error = "Error: " . mysqli_connect_error($conn);
+                $error = "Error: " . pg_last_error($conn);
             }
         }
     }
-    mysqli_close($conn);
+    pg_close($conn);
 }
 ?>
 <!DOCTYPE html>

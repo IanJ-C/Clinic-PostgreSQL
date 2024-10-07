@@ -81,7 +81,7 @@ require_once 'include/pasien.inc.php';
                     <!-- display semua data di dalem table -->
                     <?php
                     $antrian = 1;
-                    while($row = mysqli_fetch_assoc($result)){
+                    while($row = pg_fetch_assoc($result)){
                         $waktu = date_create($row['waktu']);
                         $lahir = date_create($row['lahir']);
                         $berobat = date_create($row['berobat']);

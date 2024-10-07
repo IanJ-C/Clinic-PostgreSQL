@@ -1,31 +1,49 @@
 <?php
+// error_reporting(E_ALL);
+// ini_set('display_errors',1);
 session_start();
+$error = "";
+$sukses = "";
+require_once('include/dbh.inc.php');
+
 if(!isset($_GET['id'])){
-    die('ID does not exist');
+    die("Data tidak dapat ditemukan");
 }
 // kalo access user bukan admin/dokter, redirect ke page daftar
-if($_SESSION['access'] != "admin" && $_SESSION['access'] != "dokter"){
+if($_SESSION['access'] != "admin" && $_SESSION['access'] != "doctor"){
     header('location: daftar.php');
 }
 
-require_once('include/dbh.inc.php');
 
 $id = $_GET['id'];
 // select semua data dr table daftar dimana value row  id == id
 $select = "SELECT * FROM daftar WHERE id = '$id' ";
-$result = mysqli_query($conn, $select);
+$result = pg_query($conn, $select);
 // kalo jumlah row lbh kecil dr 1, id ga ada di database
-if(mysqli_num_rows($result) < 1){
-    die('ID is not in database');
+if(pg_num_rows($result) < 1){
+    $error = "Data tidak ditemukan di dalam database";
 }
 // fetch data
-$data = mysqli_fetch_assoc($result);
-?>
-<?php
-require_once 'include/dbh.inc.php';
+$data = pg_fetch_assoc($result);
 
-$error = "";
-$sukses = "";
+$perusahaan = "";
+$nama = "";
+$dept = "";
+$diagnosa = "";
+$obat = "";
+$tindak = "";
+$keterangan = "";
+$keluhan = "";
+
+$perusahaan = is_bool($data['perusahaan']) == 1 ? "" : $data['perusahaan'];
+$nama = is_bool($data['nama']) == 1 ? "" : $data['nama'];
+$dept = is_bool($data['dept']) == 1 ? "" : $data['dept'];
+$diagnosa = is_bool($data['diagnosa']) == 1 ? "" : $data['diagnosa'];
+$obat = is_bool($data['obat']) == 1 ? "" : $data['obat'];
+$tindak = is_bool($data['tindak']) == 1 ? "" : $data['tindak'];
+$keterangan = is_bool($data['keterangan']) == 1 ? "" : $data['keterangan'];
+$keluhan = is_bool($data['keluhan']) == 1 ? "" : $data['keluhan'];
+
 // kalo id ada & edit di klik, store semua value post ke local variable
 if(isset($_GET['id']) && isset($_POST['edit'])){
     $id = $_GET['id'];
@@ -57,11 +75,11 @@ if(isset($_GET['id']) && isset($_POST['edit'])){
                 keluhan = '$keluhan'
                 WHERE id = '$id' ";
     // execute query, kalo berhasil display success message
-    if(mysqli_query($conn, $updateDaftar) == true){
+    if(pg_query($conn, $updateDaftar) == true){
         $sukses = "Data pasien berhasil di update";
     }else{
         // kalo gagal display error message
-        $error = "Data paseien gagal di update. Error: " . mysqli_connect_error();
+        $error = "Data paseien gagal di update. Error: " . pg_last_error($conn);
     }
 }
 ?>
@@ -138,12 +156,12 @@ if(isset($_GET['id']) && isset($_POST['edit'])){
                             <!-- input field perusahaan -->
                             <div class="col-lg-6 col-md-6 col-sm-6 mb-sm-0 mb-2">
                                 <label for="perusahaan" class="form-label fs-sm">Company</label>
-                                <input type="text" class="form-control fs-sm" id="perusahaan" name="perusahaan" value="<?php echo $data['perusahaan'] ?>">
+                                <input type="text" class="form-control fs-sm" id="perusahaan" name="perusahaan" value="<?php echo $perusahaan ?>">
                             </div>
                             <!-- input field nama -->
                             <div class="col-lg-6 col-md-6 col-sm-6">
                                 <label for="nama" class="form-label fs-sm">Full Name</label>
-                                <input type="text" class="form-control fs-sm" id="nama" name="nama" value="<?php echo $data['nama'] ?>">
+                                <input type="text" class="form-control fs-sm" id="nama" name="nama" value="<?php echo $nama ?>">
                             </div>
                         </div>
                         <div class="row px-sm-4 px-0 mb-sm-3 mb-2">
@@ -155,40 +173,40 @@ if(isset($_GET['id']) && isset($_POST['edit'])){
                             <!-- input field departemen -->
                             <div class="col-lg-6 col-md-6 col-sm-6">
                                 <label for="dept" class="form-label fs-sm">Department</label>
-                                <input type="text" class="form-control fs-sm" id="dept" name="dept" value="<?php echo $data['dept'] ?>">
+                                <input type="text" class="form-control fs-sm" id="dept" name="dept" value="<?php echo $dept ?>">
                             </div>
                         </div>
                         <div class="row px-sm-4 px-0 mb-sm-3 mb-2">
                             <!-- input field diagnosa -->
                             <div class="col-lg-6 col-md-6 col-sm-6 mb-sm-0 mb-2">
                                 <label for="diagnosa" class="form-label fs-sm">Diagnose</label>
-                                <input type="text" class="form-control fs-sm" id="diagnosa" name="diagnosa" value="<?php echo $data['diagnosa'] ?>">
+                                <input type="text" class="form-control fs-sm" id="diagnosa" name="diagnosa" value="<?php echo $diagnosa ?>">
                             </div>
                             <!-- input field obat -->
                             <div class="col-lg-6 col-md-6 col-sm-6">
                                 <label for="obat" class="form-label fs-sm">Medicine</label>
-                                <input type="text" class="form-control fs-sm" id="obat" name="obat" value="<?php echo $data['obat'] ?>">
+                                <input type="text" class="form-control fs-sm" id="obat" name="obat" value="<?php echo $obat ?>">
                             </div>
                         </div>
                         <div class="row px-sm-4 px-0 mb-sm-3 mb-2">
                             <!-- input field tindakan -->
                             <div class="col-lg-12 col-md-12 col-sm-12">
                                 <label for="tindak" class="form-label fs-sm">Action</label>
-                                <input type="text" class="form-control fs-sm" id="tindak" name="tindak" value="<?php echo $data['tindak'] ?>">
+                                <input type="text" class="form-control fs-sm" id="tindak" name="tindak" value="<?php echo $tindak ?>">
                             </div>
                         </div>
                         <div class="row px-sm-4 px-0 mb-sm-3 mb-2">
                             <!-- input field keterangan -->
                             <div class="col-lg-12 col-md-12 col-sm-12">
                                 <label for="keterangan" class="form-label fs-sm">Description</label>
-                                <input type="text" class="form-control fs-sm" id="keterangan" name="keterangan" value="<?php echo $data['keterangan'] ?>">
+                                <input type="text" class="form-control fs-sm" id="keterangan" name="keterangan" value="<?php echo $keterangan ?>">
                             </div>
                         </div>
                         <div class="row px-sm-4 px-0 my-sm-3 my-2">
                             <!-- text area keluhan -->
                             <div class="col-lg-12 col-md-12 col-sm-12">
                                 <label for="keluhan" class="form-label fs-sm">Complaints</label>
-                                <textarea class="form-control fs-sm" id="keluhan" name="keluhan" rows="3"><?php echo htmlspecialchars($data['keluhan']); ?></textarea>
+                                <textarea class="form-control fs-sm" id="keluhan" name="keluhan" rows="3"><?php echo htmlspecialchars($keluhan); ?></textarea>
                             </div>
                         </div>
                         <div class="row justify-content-end px-sm-4 px-0 my-3">
